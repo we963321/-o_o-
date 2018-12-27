@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>form post</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <form>
+        編號: <input type="text" name="name" readonly="readonly" value="無法更改">
+        <button type="button" onclick="formPost()">post</button>
+    </form>
+</body>
+</html>
+
+<script type="text/javascript">
+function formPost()
+{
+    var name = $('input[name=name]').val();
+    console.log(name);
+}
+</script>

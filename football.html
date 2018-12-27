@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>fool</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <style type="text/css">
+      #ball{
+        position: absolute;
+        width: 25px;
+        height: 20px;
+        border: solid 1px;
+        top:0;left: 0;
+      }
+
+      #meter{
+        
+      }
+
+
+    </style>
+</head>
+<body style="text-align: center;">
+
+  <div style="width: 500px;height: 500px">
+
+    <div style="position: relative;top: 400px;left: 250px">
+        <div id="ball">
+          ball
+        </div>
+        <div id="meter"></div>
+        <input type="radio" name="direction" value="left">左
+        <input type="radio" name="direction" value="center">中
+        <input type="radio" name="direction" value="right">右
+        <button onclick="kick()">kick</button>
+    </div>
+  </div>
+
+</body>
+</html>
+<script type="text/javascript">
+
+
+    var limit = 300;
+
+    var timer;
+
+    var ball = $('#ball');
+
+    var direction = 'center';
+
+    var kick = function() {
+
+      direction = $('input[name=direction]:checked').val();
+
+      timer = setInterval(
+        function () {
+          move(ball, direction);
+      }, 50);
+    }
+
+
+    var move = function(ball){
+
+      var top = ball.css('top');
+      var left = ball.css('left');
+
+      top = top.substring(0,top.length-2);
+      left = left.substring(0,left.length-2);
+
+      top = (top*1) - 10;
+
+      if(direction == 'left'){
+        left = (left*1) - 5;
+      }else if(direction == 'right'){
+        left = (left*1) + 5;
+      }
+      
+      if(top <= -(limit)){
+        clearInterval(timer);
+        ball.css('top','0px').css('left','0px');
+        return;
+      }
+
+      ball.css('top',top+'px').css('left',left+'px');
+    }
+
+</script>

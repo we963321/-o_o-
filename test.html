@@ -1,0 +1,40 @@
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <title>HTTP Cross-Origin Resource Sharing</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.js"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#send-btn').click(function(){
+                let d = new Date();
+                let h = d.getHours();
+                let m = d.getMinutes();
+                let time = h + m;
+                let key = "base64:AXzWSoqj+cp5tV4Ob8F+8m+4zx1BAXDQ9YicfTOPE6I=";
+                let result = md5(key + time + key);
+
+                console.log(result)
+               
+                /*axios.get('http://192.168.0.11:8080/getHomeData?token='+result)
+                  .then(function (response) {
+                    console.log('ok');
+                  });*/
+
+            });
+        });
+    </script>
+</head>
+<body>
+    <input type="text" name="data" value="Secret!" id="text-input" />
+  <button id="send-btn">Send to Hack Site</button>
+</body>
+</html>

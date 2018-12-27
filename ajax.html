@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ajax</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{ exampleString }}
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+var app = new Vue({
+    el: '#app',
+    data: {
+        message: 'Hello Vue!',
+        exampleString: ''
+    },
+    mounted: function () {
+        getJson();
+    }
+});
+
+function getJson()
+{
+    $.ajax({
+        url: 'data.json',
+        type: "get",
+        dataType: "json",
+        success: function(response) {
+            app.exampleString = response.string;
+        }
+    });
+}
+
+
+</script>

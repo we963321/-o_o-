@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>to do list</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <div>
+        <div>name: <input type="text" name="name"></div>
+        <div>todo: <input type="text" name="todo"></div>
+        <button id="addRow">add</button>
+
+        <table>
+            <tr>
+                <th>name</th>
+                <th>todo</th>
+                <th>method</th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $('#addRow').on('click', function() {
+        var name = $("input[name='name']").val();
+        var todo = $("input[name='todo']").val();
+
+        $('table tr:last').after('<tr class="list"><td>' + name + '</td><td>' + todo + '</td><td><button class="delete">delete</button></td></tr>');
+    });
+
+    $(document).on('click', '.delete', function(){
+        $(this).closest('.list').remove();
+    });
+</script>

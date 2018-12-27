@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ajax</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <style type="text/css">
+        .line{
+            border-bottom: solid;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" :style="style.styleList">
+        ${ message }
+        <button v-on:click="getdata()">Go!</button>
+        <template v-for="(item, key) in membersList">
+            <div v-on:click="getMemberName(key)" >${ key }. ${ item.sex }, Age:${item.age}, Name: ${ item.name }</div>
+        </template>
+    </div>
+
+    <div class="line"></div>
+
+
+    <div id="frouts">
+        <ul>
+            <li v-for="(item, key) in filteredFrouts">(${ key })${ item.name }</li>
+        </ul>
+    </div>
+
+    <div class="line"></div>
+
+
+    <div id="msg">
+        <input type="text" v-model="message" value="">
+        <p>message：${ message }</p>
+        <p>now (computed)：${ now }</p>
+        <p>getNow (method)：${ getNow() }</p>
+    </div>
+
+    <div class="line"></div>
+
+
+    <div id="test">
+        <input type="text" v-model="firstName" value="">
+        <input type="text" v-model="lastName" value="">
+        <p>fullName (computed)：${ fullName }</p>
+        <p>fullNameCombined (watch)：${ fullNameCombined }</p>
+    </div>
+
+
+    <div class="line"></div>
+
+    <div id="watch">
+      <p>請輸入使用者名稱。</p>
+      <input type="text" v-model="userName">
+      <p>${ errMsg }</p>
+  </div>
+
+
+
+  <div id="aaa">
+    {{ message }}
+    <description-section></description-section>
+</div>
+
+<div id="app1">
+    <menu-section></menu-section>
+</div>
+
+<div id="counter-event-example">
+  <p>總來客量: {{ total }}</p>
+  <button-counter door="前門" v-on:increment="incrementTotal"></button-counter>
+  <button-counter door="後門" v-on:increment="incrementTotal"></button-counter>
+</div>
+
+
+<div id="bbb">
+    123
+</div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+
+    var a = new Vue();
+
+    console.log(a);
+
+
+    var Example = Vue.extend({
+        template: '<ul><li v-for="item in menuItems">{{ item.text }}</li></ul>',
+        data() {
+            return {
+                menuItems: [{
+                    text: 'About me'
+                }, {
+                    text: 'Articles'
+                }, {
+                    text: 'contact'
+                }]
+            };
+        }
+    });
+    new Example().$mount('#bbb');
+
+    var aaa = new Vue({
+        el: '#aaa',
+        data: {
+            message: 'Hello Vue!'
+        },
+        components: {
+            'description-section': {
+                template: '<button @click="sayhi()">{{ text }}</button>',
+                data: function() {
+                    return {
+                        text: 'Hello, I am Ralph.'
+                    }
+                },
+                methods:{
+                    sayhi : function(){
+                        alert('hi');
+                    }
+                }
+            }
+        }
+
+    });
+
+
+    var MenuItem = Vue.extend({
+        template: '<ul><li v-for="item in menuItems">{{ item.text }}</li></ul>',
+        data: function() {
+            return {
+                menuItems: [{
+                    text: 'About me'
+                }, {
+                    text: 'Articles'
+                }, {
+                    text: 'contact'
+                }]
+            };
+        }
+    });
+
+    var app1 = new Vue({
+        el: '#app1',
+        components: {
+            'menu-section': MenuItem
+        }
+    });
+
+
+
+    Vue.component('button-counter', {
+      template: '<button v-on:click="increment">{{ door }}來客+1 ( {{ counter }} )</button>',
+      props: ['door'],
+      data: function () {
+        return {
+          counter: 0
+      }
+  },
+  methods: {
+    /* 來客+1 */
+    increment: function () {
+      this.counter += 1
+      /* 通知主任，多了一人來客 */
+      this.$emit('increment')
+  }
+},
+})
+    new Vue({
+      el: '#counter-event-example',
+      data: {
+        total: 0
+    },
+    methods: {
+        /* 主任得知來客+1，總來客量+1 */
+        incrementTotal: function () {
+          this.total += 1
+      }
+  }
+})
+
+
+
+    var app = new Vue({
+        el:'#app',
+        delimiters: ['${', '}'],
+        data:{
+            style:{
+                styleList: {
+                  color: '#F25E7A',
+                  fontSize: '20px',
+                  background:'black'
+              }
+          },
+
+          message: 'Members List',
+          members:''
+      },
+      methods:{
+        getdata:function(){
+                //ajax content ... 
+                //return JSON
+                let obj = [
+                {id:1,sex:'1',age:20,name:'',email:''},
+                {id:2,sex:'0',age:18,name:''},
+                {id:5,sex:'1',age:30,name:''},
+                {id:8,sex:'0',age:6},
+                {id:10,sex:'0',age:5,name:''}
+                ];
+
+                this.members = obj;
+            },
+            getMemberName:function(key){
+                if(typeof this.membersList[key]['name'] !== 'undefined'){
+                    if(this.membersList[key]['id'] == 1){
+                        this.membersList[key]['name'] = ' Vue';
+                    }else if(this.membersList[key]['id'] == 2){
+                        this.membersList[key]['name'] = ' Angular';
+                    }else{
+                        this.membersList[key]['name'] = '87???';
+                    }
+                }else{
+                    this.membersList[key]['name'] = '';
+                }
+            }
+        },
+        computed: {
+            membersList: function() {
+                if(this.members.length > 0){
+                  return this.members.filter(function(item) {
+                        /*if(typeof item.name === 'undefined'){
+                             Vue.set(item, 'name', "")
+                         }*/
+                         return typeof item.name !== 'undefined';
+                     });
+              }
+          },
+      },
+      watch:{
+        membersList:function(){
+            this.membersList.filter(function(item) {
+                if(item.age <= 10)
+                    item.sex = 'Children';
+                if(item.name == ''){
+                    item.name += 'Click me';
+                }
+
+                if(item.sex == 0){
+                    item.sex = 'Female'
+                }else if(item.sex == 1){
+                    item.sex = 'Male';
+                }
+
+            });            
+        }
+    }
+});
+
+
+
+
+
+
+    var frouts = new Vue({
+      el: '#frouts',
+      delimiters: ['${', '}'],
+      data: {
+        frouts: [
+        {
+            name: 'Apple',
+            count: 10
+        },
+        {
+            name: 'Orange',
+            count: 5
+        },
+        {
+            name: 'Banana',
+            count: 20
+        },
+        ]
+    },
+    computed: {
+        filteredFrouts: function() {
+          return this.frouts.filter(function(item) {
+            return item.count > 6
+        });
+      }
+  }
+});
+
+
+    var msg = new Vue({
+        el: '#msg',
+        delimiters: ['${', '}'],
+        data: {
+            message: 'Hello World!'
+        },
+        computed: {
+            now: function() {
+              return Date.now();
+          }
+      },
+      methods: {
+        getNow: function() {
+            return Date.now();
+        }
+    }
+});
+
+
+
+    var test = new Vue({
+        el: '#test',
+        delimiters: ['${', '}'],
+        data: {
+            firstName: 'Bill',
+            lastName: 'Chen',
+            fullNameCombined: 'Billy Chen'
+        },
+        computed: {
+            fullName: function() {
+              return this.firstName + ' ' + this.lastName;
+          }
+      },
+      watch: {
+          firstName: function(val) {
+              this.fullNameCombined = this.firstName + ' ' + this.lastName;
+          },
+          lastName: function(val) {
+              this.fullNameCombined = this.firstName + ' ' + this.lastName;
+          }
+      }
+  });
+
+
+
+    var watch = new Vue({
+      el: '#watch',
+      delimiters: ['${', '}'],
+      data: {
+        userName: '',
+        errMsg: ''
+    },
+    watch: {
+        userName: function(value) {
+            if(this._valid(value)) {
+                this.errMsg = '使用者名稱開頭不可為數字。'
+            } else {
+                this.errMsg = '合法的使用者名稱。';
+            }
+        }
+    },
+    methods: {
+        _valid: function(name) {
+          return /^[0-9]/.test(name);
+      }
+  }
+});
+
+
+</script>

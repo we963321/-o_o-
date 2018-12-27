@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>to do list</title>
+    <script type="text/javascript" src="js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div>name: <input type="text" v-model="todoArray.name"></div>
+        <div>todo: <input type="text" v-model="todoArray.todo"></div>
+        <button @click="addRow">add</button>
+
+        <table>
+            <tr>
+                <th>name</th>
+                <th>todo</th>
+                <th>method</th>
+            </tr>
+            <tr v-for="(info, key) in listArray">
+                <th>{{ info.name }}</th>
+                <th>{{ info.todo }}</th>
+                <th><button @click="rmRow(key)">delete</button></th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+var app = new Vue({
+    el: '#app',
+    data: {
+        todoArray: [],
+        listArray: [],
+    },
+    methods: {
+        addRow: function () {
+            this.listArray.push({
+                name: this.todoArray.name,
+                todo: this.todoArray.todo,
+            });
+
+            this.todoArray = [];
+        },
+        rmRow: function (key) {
+            this.listArray.splice(key, 1);
+        },
+    }
+})
+</script>

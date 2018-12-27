@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>vue</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
+
+    <style type="text/css">
+        .cube{
+            position:absolute;
+            background-image: url("coin.png");
+            background-size: contain;
+        }
+
+        .player{
+            position:absolute;
+            background:white;
+            border-style: solid;
+        }
+        #gameContent{
+           border-style: solid;
+           background-image: url("bk.jpg");
+           background-size: contain;
+           background-repeat: no-repeat;
+        }
+
+        .score{
+            display: block;
+            font-size: 30pt;
+            font-weight: 900;
+            color:white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+  <div class="content">
+    <div id="gameContent"> 
+        <button @click="startGame">start</button>
+        <button @click="stopGame">stop</button>
+
+
+        <!--<button @click="restart">restart</button>-->
+        <cube-data v-for="item in box" :cube="item" :dropping="status"></cube-data>
+        <player :moving="moving"></player>
+
+        <div v-html="score" class="score"></div>
+    </div>
+    
+  </div>
+
+  <template id="cube-data">
+      <div :style="skin" :id="cube.id" class="cube"></div>
+  </template>
+
+  <template id="player-data">
+      <div :style="skin" class="player" id="player">人物在這</div>
+  </template>
+
+
+</body>
+</html>
+<script type="text/javascript">
+
+
+    let cube_skin = {
+        "width" : "50px",
+        "height" : "50px",
+    };
+
+    let cubeData = {
+        template: "#cube-data",
+        props: ['cube','dropping'],
+        data (){
+          return {
+            timer: [],
+          };
+        },
+        mounted(){
+          let rand =  Math.floor((Math.random() * 100) + 1);
+
+          this.timer[this.cube.round] = setInterval(() => {
+            this.down(this.cube);
+          }, game.down_speed + rand);
+        },
+        computed: {
+          skin(){
+            return {
+              'width': cube_skin.width,
+              'height': cube_skin.height,
+              'left': this.cube.left+'px',
+              'top': this.cube.top+'px'
+            };
+          },
+        },
+        methods: {
+          down(cube){
+            if(!this.dropping){
+                clearInterval(this.timer[cube.round]);
+            }
+
+            let top = parseInt(cube.top);
+            let left = parseInt(cube.left);
+
+            top += 20;
+            cube.top = top;
+
+            let player = document.getElementById('player');
+            let player_left = parseInt(player.style.left);
+            let player_height = parseInt(player_skin.height);
+            let cube_height = parseInt(cube_skin.height);;
+
+            let limit = data.limit;
+            let left_hit = Math.abs(left - player_left);
+            let top_hit = (limit - player_height);
+
+            if(top - player_height + cube_height >= top_hit && (left_hit < data.cubeSpacing)){
+                game.score++;
+                clearInterval(this.timer[cube.round]);
+                Vue.delete(this.timer, cube.round);
+                $('#'+cube.id).remove();
+                return;
+            }
+
+            if(cube.top >= game.limit){
+              clearInterval(this.timer[cube.round]);
+              Vue.delete(this.timer, cube.round);
+              $('#'+cube.id).remove();
+              return;
+            }
+          }
+        }
+    };
+
+    let player_skin = {
+        "width" : "50px",
+        "height" : "50px",
+        "top" : "400px",
+    };
+
+    let player = {
+      template: "#player-data",
+      data(){
+        return {
+          left: 0,
+          max_left: 0,
+        }
+      },
+      mounted(){
+        this.left = data.player_left;
+        this.max_left = data.aisle * 50 + 10;
+      },
+      props: [ 'moving' ],
+      computed: {
+          skin(){
+
+            if(this.moving){
+              if(game.direction == 'L'){
+                this.left -= 10;
+              }else if(game.direction == 'R'){
+                this.left += 10;
+              }
+
+              if(this.left <= 0)
+                this.left = 0;
+
+              if(this.left >= this.max_left)
+                this.left = this.max_left;
+            }
+
+            return {
+              'width': player_skin.width,
+              'height': player_skin.height,
+              'top': player_skin.top,
+              'left': this.left + 'px'
+            };
+          },
+
+      }
+    };
+
+    let data = {
+        box : [],
+        status : false,
+        aisle : 10,
+        create_speed : 1000,
+        down_speed : 100,
+        round : 0,
+        limit : 400,
+        cubeSpacing : 60,
+        min_row_cubes : 2, //每行最少掉落幾塊
+        max_row_cubes : 4, //每行最多掉落幾塊
+        direction: '',
+        moving : 0,
+        player_left: 180,
+        score: 0,
+    };
+
+    let game = new Vue({
+        el: "#gameContent",
+        data: data,
+        components:{ cubeData, player },
+        mounted(){
+            document.getElementById('gameContent').style.width = this.aisle * this.cubeSpacing  + 'px';
+            document.getElementById('gameContent').style.height = this.limit + parseInt(player_skin.height) + 'px';
+        },
+        computed: {},
+        methods:{
+            startGame(){
+                this.status = setInterval(() => {
+                    this.round ++ ;
+                    let count = Math.floor(Math.random() * (this.max_row_cubes - this.min_row_cubes + 1)) + this.min_row_cubes;   //一行產生幾個方塊
+                    let num = this.randAisle( count ); //每個方塊出現在第幾個通道
+                    for(let i = 0; i < num.length; i++){
+                        this.createCube(num[i]);
+                    }
+                },this.create_speed);
+            },
+
+            createCube(i){
+                let id = 'cube'+(this.round)+(i);
+                let left = i*this.cubeSpacing + 20;
+
+                let cube = { 
+                  'id' : id, 
+                  'left' : left, 
+                  'top' : 0,
+                  'round':this.round
+                };
+                
+                this.box.push(cube);
+            },
+
+            stopGame(){
+                clearInterval(this.status);
+                this.status = false;
+            },
+
+            continueGame(){
+                this.startGame();
+            },
+
+            randAisle(count){
+                let arr = new Array(this.aisle);
+                for(let i = 0; i < this.aisle ; i++){
+                    arr[i] = i;
+                }
+
+                let out = [];
+                for(let i = 0; i < count; i++){
+                    let idx = parseInt(Math.random()*arr.length);
+                    out.push(arr[idx]);
+                    arr.splice(idx,1);    
+                }
+                return out;
+            },
+
+            playerMove(direction){
+              this.direction = direction;
+              this.moving++;
+            }
+        }
+      
+    });
+
+
+
+    document.addEventListener('keydown', (event) => {
+      switch(event.code){
+          case "ArrowLeft":
+            game.playerMove('L'); 
+            break;
+          case "ArrowRight":
+            game.playerMove('R');
+            break;
+      }
+    });
+
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ajax</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        編號: <input type="text" name="name" readonly="readonly" v-model="number">
+        <button type="button" onclick="formPost()">post</button>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+var app = new Vue({
+    el: '#app',
+    data: {
+        number: '無法更改Q_Q',
+    }
+});
+
+function formPost()
+{
+    console.log(app.number);
+}
+
+
+</script>
